@@ -1,0 +1,333 @@
+:root {
+  --ink-navy: #0b1220;
+  --ink-navy-deep: #070c16;
+  --cloud: #f5f6f8;
+  --fog: #9aa5b8;
+  --amber: #ffb648;
+  --amber-dim: #7a5b25;
+  --sprout: #8fd14f;
+  --coral: #ff6b5e;
+  --panel: rgba(20, 28, 46, 0.72);
+  --panel-border: rgba(255, 182, 72, 0.18);
+
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* fluid spacing/type scale — mobile-first base, scales up via clamp() */
+  --space-page-x: clamp(14px, 4vw, 24px);
+  --space-page-bottom: clamp(16px, 4vh, 48px);
+  --bubble-pad: clamp(14px, 3.5vw, 22px);
+  --fs-speech: clamp(14px, 3.6vw, 16px);
+  --fs-label: clamp(10px, 2.6vw, 11px);
+  --fs-input: 16px; /* fixed at 16px minimum: prevents iOS Safari auto-zoom on focus */
+  --btn-min-h: 48px; /* touch target */
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 20%, #131c30 0%, var(--ink-navy) 45%, var(--ink-navy-deep) 100%);
+  color: var(--cloud);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Use dynamic viewport height so mobile browser chrome doesn't clip content */
+#stage, .terminal-outer {
+  height: 100svh;
+  min-height: 100vh; /* fallback */
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+#scene-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: max(18px, env(safe-area-inset-top)) 20px 0;
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.wordmark-main {
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 2.8vw, 12px);
+  letter-spacing: 0.24em;
+  color: var(--amber);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wordmark-sub {
+  font-family: var(--font-body);
+  font-size: clamp(10px, 2.6vw, 12px);
+  letter-spacing: 0.08em;
+  color: var(--fog);
+}
+
+.terminal {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px var(--space-page-x);
+  padding-bottom: max(var(--space-page-bottom), env(safe-area-inset-bottom));
+  gap: clamp(14px, 2.8vh, 22px);
+  transition: padding-bottom 0.2s ease;
+}
+
+/* Speech bubble */
+.speech-wrap {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.speech-bubble {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: var(--bubble-pad);
+  min-height: 56px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.speech-bubble.state-success {
+  border-color: rgba(143, 209, 79, 0.45);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35), 0 0 32px rgba(143, 209, 79, 0.12);
+}
+
+.speech-bubble.state-fail {
+  border-color: rgba(255, 107, 94, 0.45);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35), 0 0 32px rgba(255, 107, 94, 0.12);
+}
+
+.speech-tail {
+  width: 16px;
+  height: 16px;
+  margin-top: -9px;
+  background: var(--panel);
+  border-right: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+  transform: rotate(45deg);
+  backdrop-filter: blur(14px);
+}
+
+#speech-text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-speech);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--cloud);
+  min-height: 1.4em;
+  word-wrap: break-word;
+}
+
+.result-card {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255,255,255,0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-card.hidden { display: none; }
+.result-row.hidden { display: none; }
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 2.9vw, 12.5px);
+}
+
+.result-label {
+  color: var(--fog);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.result-value {
+  color: var(--cloud);
+  text-align: right;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* Search form */
+.search-form {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fog);
+  padding-left: 4px;
+}
+
+.search-row {
+  display: flex;
+  gap: 10px;
+}
+
+#name-input {
+  flex: 1;
+  min-width: 0; /* allow shrinking inside flex row on narrow screens */
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: var(--font-body);
+  font-size: var(--fs-input);
+  color: var(--cloud);
+  outline: none;
+  min-height: var(--btn-min-h);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+#name-input::placeholder { color: rgba(154, 165, 184, 0.6); }
+
+#name-input:focus {
+  border-color: var(--amber);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 4px rgba(255, 182, 72, 0.12);
+}
+
+#verify-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(13px, 3.4vw, 14px);
+  letter-spacing: 0.02em;
+  color: var(--ink-navy-deep);
+  background: linear-gradient(180deg, #ffc773, var(--amber));
+  border: none;
+  border-radius: 12px;
+  padding: 0 clamp(16px, 4vw, 22px);
+  min-height: var(--btn-min-h);
+  min-width: 84px;
+  flex-shrink: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 8px 20px rgba(255, 182, 72, 0.25);
+}
+
+#verify-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255, 182, 72, 0.35); }
+#verify-btn:active { transform: translateY(0px) scale(0.98); }
+#verify-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+#verify-btn:focus-visible,
+#name-input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.search-hint {
+  margin: 2px 0 0;
+  padding-left: 4px;
+  font-size: clamp(11px, 2.9vw, 12px);
+  color: var(--fog);
+  min-height: 1.2em;
+  transition: color 0.25s ease;
+}
+
+.search-hint.hint-success { color: var(--sprout); }
+.search-hint.hint-fail { color: var(--coral); }
+
+/* Motto */
+.motto {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 10px);
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 2.4vw, 11px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fog);
+  opacity: 0.8;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.motto i { font-style: normal; color: var(--amber-dim); }
+
+/* ============ Breakpoints ============ */
+
+/* Small phones (narrow width or short landscape height): tighten everything */
+@media (max-width: 359px) {
+  .wordmark-sub { display: none; }
+  .terminal { gap: 12px; }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .topbar { padding-top: max(10px, env(safe-area-inset-top)); }
+  .wordmark-sub { display: none; }
+  .terminal { gap: 10px; padding-top: 8px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .speech-bubble { padding: 12px 16px; min-height: 44px; }
+  .motto { display: none; }
+}
+
+/* Tablet and up */
+@media (min-width: 640px) {
+  .terminal { gap: 26px; }
+  .speech-wrap, .search-form { max-width: 520px; }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .terminal { gap: 30px; padding-bottom: clamp(40px, 6vh, 72px); }
+  .speech-wrap, .search-form { max-width: 560px; }
+  #verify-btn:hover { transform: translateY(-2px); }
+}
+
+/* Large desktop: give the 3D scene more breathing room, keep panel from stretching too wide */
+@media (min-width: 1440px) {
+  .speech-wrap, .search-form { max-width: 600px; }
+}
+
+/* Accessibility: reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

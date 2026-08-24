@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0" />
+<title>Phathand Tech · Certificate Verification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="stage">
+    <canvas id="scene-canvas"></canvas>
+  </div>
+
+  <header class="topbar">
+    <div class="wordmark">
+      <span class="wordmark-main">PHATHAND TECH</span>
+      <span class="wordmark-sub">Summer Coaching</span>
+    </div>
+  </header>
+
+  <main class="terminal">
+
+    <div class="speech-wrap" aria-live="polite">
+      <div class="speech-bubble" id="speech-bubble">
+        <p id="speech-text"></p>
+        <div id="result-card" class="result-card hidden">
+          <div class="result-row"><span class="result-label">Name</span><span class="result-value" id="result-name">—</span></div>
+          <div class="result-row"><span class="result-label">Course</span><span class="result-value" id="result-course">—</span></div>
+          <div class="result-row hidden" id="result-skill-row"><span class="result-label">Skill Acquired</span><span class="result-value" id="result-skill">—</span></div>
+          <div class="result-row"><span class="result-label">Status</span><span class="result-value" id="result-status">—</span></div>
+        </div>
+      </div>
+      <div class="speech-tail"></div>
+    </div>
+
+    <form id="search-form" class="search-form" autocomplete="off">
+      <label for="name-input" class="search-label">Type your name here correctly</label>
+      <div class="search-row">
+        <input
+          type="text"
+          id="name-input"
+          name="name"
+          placeholder="e.g. Olayinka Mosh"
+          spellcheck="false"
+        />
+        <button type="submit" id="verify-btn">Verify</button>
+      </div>
+      <p class="search-hint" id="search-hint">Sabimosh is waiting for your name — scanned copies never lie.</p>
+    </form>
+
+    <div class="motto">
+      <span>Innovation</span><i>·</i><span>Service</span><i>·</i><span>Excellence</span>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
