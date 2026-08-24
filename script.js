@@ -576,7 +576,7 @@ form.addEventListener('submit', async (e) => {
     resultSkillRow.classList.toggle('hidden', !result.skill);
     if (result.skill) resultSkill.textContent = result.skill;
     resultCard.classList.remove('hidden');
-    hint.textContent = 'This certificate is genuine and on record.';
+    hint.textContent = 'This certificate is genuine and on record. It is a testament to the hard work and dedication of the student who has display all the criteria needed to be given this certificate.';
     hint.className = 'search-hint hint-success';
   } else {
     playFail();
