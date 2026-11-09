@@ -1,0 +1,10 @@
+{
+  "certificate_code": "CERT-8D38526F",
+  "student_name": "Jane Doe",
+  "course_name": "Intro to Python",
+  "percentage": 92.5,
+  "grade": "A",
+  "date_issued": "2026-08-22",
+  "institution_name": "Bright Academy",
+  "status": "active"
+}

@@ -18,10 +18,15 @@ const form = document.getElementById('search-form');
 const input = document.getElementById('name-input');
 const hint = document.getElementById('search-hint');
 const verifyBtn = document.getElementById('verify-btn');
+const honourPanel = document.getElementById('honour-panel');
+const honourSeason = document.getElementById('honour-season');
+const honourContent = document.getElementById('honour-content');
 
 /* ---------- Data ---------- */
 let DATA = { course: 'Phathand Tech Summer Coaching', motto: 'Innovation · Service · Excellence', trainer: 'Phathand Tech', students: [] };
 let RECORDS = []; // parsed { name, skill } entries
+let HONOUR_DATA = { season: '', awards: [] };
+let HONOUR_AWARDS = [];
 
 // Accepts each entry in students.json as either:
 //   "Full Name | Skill Trained On"   (preferred — skill shown on verification)
@@ -45,6 +50,74 @@ async function loadData() {
   } finally {
     RECORDS = parseRecords(DATA.students);
   }
+}
+
+async function loadHonourData() {
+  try {
+    const res = await fetch('data/honour.json', { cache: 'no-store' });
+    if (!res.ok) {
+      HONOUR_DATA = { season: '', awards: [] };
+      return;
+    }
+    HONOUR_DATA = await res.json();
+  } catch (e) {
+    console.warn('Honour data not available — no honour roll will be shown.', e);
+    HONOUR_DATA = { season: '', awards: [] };
+  } finally {
+    HONOUR_AWARDS = (Array.isArray(HONOUR_DATA.awards) ? HONOUR_DATA.awards : [])
+      .filter((award) => award && award.student_name && award.published !== false);
+  }
+}
+
+function renderHonourResult(award) {
+  if (!award) {
+    honourPanel.classList.add('hidden');
+    honourContent.innerHTML = '';
+    return;
+  }
+
+  const rankMap = {
+    champion: 'Champion',
+    first_runner_up: 'First Runner-Up',
+    second_runner_up: 'Second Runner-Up',
+    consolation: 'Consolation Prize'
+  };
+  const medalMap = {
+    champion: '🏆',
+    first_runner_up: '🥈',
+    second_runner_up: '🥉',
+    consolation: '🎖️'
+  };
+
+  const rankLabel = rankMap[award.rank] || 'Participant';
+  const medal = medalMap[award.rank] || '🏅';
+  const seasonName = HONOUR_DATA.season || 'Honour Roll';
+  const prizeText = award.prize || 'Awarded recognition';
+  const claimDate = award.claim_date ? new Date(`${award.claim_date}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date to be announced';
+  const venueText = award.claim_venue ? `Collection venue: ${award.claim_venue}` : 'Collection details will be shared later';
+
+  honourSeason.textContent = seasonName;
+  honourPanel.classList.remove('hidden');
+  honourContent.innerHTML = `
+    <div class="honour-panel-badge" aria-hidden="true">${medal}</div>
+    <div class="honour-panel-meta">
+      <span class="honour-panel-name">${award.student_name}</span>
+      <span class="honour-panel-rank">${rankLabel}</span>
+      <span class="honour-panel-prize"><span class="honour-panel-highlight">Prize:</span> ${prizeText}</span>
+      <span class="honour-panel-date"><span class="honour-panel-highlight">Claim by:</span> ${claimDate}</span>
+      <span class="honour-panel-venue"><span class="honour-panel-highlight">Venue:</span> ${venueText}</span>
+    </div>
+  `;
+}
+
+function findHonourMatch(name) {
+  const query = normalize(name);
+  if (!query) return null;
+
+  return HONOUR_AWARDS.find((award) => {
+    const awardName = normalize(String(award.student_name || ''));
+    return awardName === query || awardName.includes(query) || query.includes(awardName);
+  }) || null;
 }
 
 /* ---------- Name matching ---------- */
@@ -548,6 +621,7 @@ form.addEventListener('submit', async (e) => {
   verifyBtn.disabled = true;
   input.disabled = true;
   resultCard.classList.add('hidden');
+  honourPanel.classList.add('hidden');
   speechBubble.classList.remove('state-success', 'state-fail');
   hint.textContent = '';
   hint.className = 'search-hint';
@@ -576,6 +650,7 @@ form.addEventListener('submit', async (e) => {
     resultSkillRow.classList.toggle('hidden', !result.skill);
     if (result.skill) resultSkill.textContent = result.skill;
     resultCard.classList.remove('hidden');
+    renderHonourResult(findHonourMatch(result.name));
     hint.textContent = 'This certificate is genuine and on record. It is a testament to the hard work and dedication of the student who has display all the criteria needed to be given this certificate.';
     hint.className = 'search-hint hint-success';
   } else {
@@ -588,6 +663,7 @@ form.addEventListener('submit', async (e) => {
       await typeText(speechText, `I couldn't find that name in the ${DATA.course} records. Double-check the spelling on your certificate and try again.`, 18);
     }
     resultCard.classList.add('hidden');
+    renderHonourResult(null);
     hint.textContent = 'No match found — this name is not on the verified list.';
     hint.className = 'search-hint hint-fail';
   }
@@ -600,5 +676,6 @@ form.addEventListener('submit', async (e) => {
 /* ---------- Boot ---------- */
 (async function init() {
   await loadData();
+  await loadHonourData();
   setTimeout(greet, 500);
 })();

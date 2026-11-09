@@ -1,0 +1,85 @@
+{
+  "season": "2026 First Term",
+  "awards": [
+    {
+      "rank": "champion",
+      "student_name": "Jane Doe",
+      "certificate_id": "b6e3f93b-c568-4c89-a225-6093bd2efc6f",
+      "performance": {
+        "exam": 96,
+        "attendance": 98.5,
+        "class_activity": 90,
+        "project": 94,
+        "conduct": 100
+      },
+      "prize": "a laptop and a cash prize of N50,000",
+      "claim_date": "2027-01-15",
+      "claim_venue": "the Administrative Office",
+      "note": "Please bring your student ID card when claiming.",
+      "claimed": false
+    },
+    {
+      "rank": "first_runner_up",
+      "student_name": "Chinedu Okafor",
+      "performance": {
+        "exam": 91,
+        "attendance": 95,
+        "class_activity": 88,
+        "project": 90,
+        "conduct": 92
+      },
+      "prize": "a tablet and a certificate of excellence",
+      "claim_date": "2027-01-15",
+      "claimed": false
+    },
+    {
+      "rank": "second_runner_up",
+      "student_name": "Amina Yusuf",
+      "performance": {
+        "exam": 88,
+        "attendance": 92,
+        "class_activity": 85,
+        "project": 89,
+        "conduct": 95
+      },
+      "prize": "a scientific calculator and a book bundle",
+      "claim_date": "2027-01-15",
+      "claimed": false
+    },
+    {
+      "rank": "consolation",
+      "student_name": "Emeka Eze",
+      "performance": {
+        "exam": 80,
+        "attendance": 90,
+        "class_activity": 82,
+        "project": 84,
+        "conduct": 88
+      },
+      "prize": "a gift hamper",
+      "claim_date": "2026-10-01",
+      "claimed": false
+    },
+    {
+      "rank": "consolation",
+      "student_name": "Fatima Bello",
+      "performance": {
+        "exam": 78,
+        "attendance": 97,
+        "class_activity": 80,
+        "project": 79,
+        "conduct": 90
+      },
+      "prize": "a gift hamper",
+      "claim_date": "2026-10-01",
+      "claimed": true
+    },
+    {
+      "rank": "consolation",
+      "student_name": "Draft Student (hidden)",
+      "performance": { "exam": 70, "attendance": 70, "class_activity": 70, "project": 70, "conduct": 70 },
+      "prize": "a gift hamper",
+      "published": false
+    }
+  ]
+}

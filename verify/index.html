@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Certificate Verification</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎓%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <div class="header-inner">
+        <div class="badge-icon">🎓</div>
+        <div>
+          <div class="brand" id="brand">Result &amp; Certificate Verification</div>
+          <div class="brand-sub" id="brand-sub">Official verification portal</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="card" id="card">
+      <div id="loading" class="state">
+        <div class="spinner"></div>
+        <p>Verifying certificate…</p>
+      </div>
+    </main>
+
+    <!-- Filled in by honour.js after a successful verification -->
+    <section id="honour" class="honour hidden" aria-label="Honour roll"></section>
+
+    <p class="disclaimer" id="disclaimer">
+      This is an official verification page. Do not trust any certificate
+      whose details do not exactly match what is shown here. If in doubt,
+      contact the issuing institution directly.
+    </p>
+  </div>
+
+  <script src="/assets/honour.js"></script>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "certificate_code": "CERT-5A02D6E3",
+  "student_name": "Sample Revoked Student",
+  "course_name": "Data Structures",
+  "percentage": 74,
+  "grade": "B",
+  "date_issued": "2026-06-10",
+  "institution_name": "Bright Academy",
+  "status": "revoked"
+}

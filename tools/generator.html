@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Entry Tool — Certificates, QR Codes &amp; Honour Roll</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f6fb;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  .page { max-width: 880px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .lead { margin: 0 0 22px; color: #6b7280; font-size: 14px; }
+  .panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 6px rgba(20, 30, 60, 0.07);
+  }
+  h2 { margin: 0 0 4px; font-size: 17px; }
+  .sub { margin: 0 0 16px; color: #6b7280; font-size: 13px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .span2 { grid-column: 1 / -1; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #374151; }
+  input[type=text], input[type=number], input[type=date], select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+    background: #fff;
+  }
+  label.check { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+  button {
+    font: inherit; font-size: 14px; font-weight: 600;
+    border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer;
+  }
+  .primary { background: #2d6cdf; color: #fff; }
+  .secondary { background: #eef1f6; color: #1a1a1a; }
+  .error { color: #c0272d; font-size: 13px; min-height: 18px; margin-top: 8px; }
+  .out { margin-top: 20px; border-top: 1px solid #eef1f6; padding-top: 18px; }
+  .hidden { display: none; }
+  .step { font-size: 13px; font-weight: 700; color: #1a2b4c; margin: 0 0 6px; }
+  code.path { background: #eef1f6; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; word-break: break-all; }
+  pre {
+    margin: 8px 0 10px;
+    padding: 12px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 8px;
+    font-size: 12.5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .qr-box { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; margin-top: 8px; }
+  canvas { width: 200px; height: 200px; border: 1px solid #e5e9f2; border-radius: 8px; image-rendering: pixelated; }
+  .note { font-size: 12.5px; color: #6b7280; margin-top: 6px; word-break: break-all; }
+  .ok { color: #1a7f3c; font-size: 13px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Entry Tool</h1>
+  <p class="lead">
+    Private helper for you. It is <strong>not</strong> part of the live website. Open this file
+    directly in your browser. It works offline and sends nothing anywhere.
+  </p>
+
+  <!-- ===================== Certificate ===================== -->
+  <section class="panel">
+    <h2>1. New certificate + QR code</h2>
+    <p class="sub">Creates the certificate's JSON file and the QR code that points to it.</p>
+
+    <form id="cert-form" class="grid" novalidate>
+      <div class="span2">
+        <label for="c-base">Your website address *</label>
+        <input type="text" id="c-base" placeholder="https://your-site.vercel.app" />
+        <div class="note">The QR code will point here. Use your final address before printing any certificates.</div>
+      </div>
+      <div><label for="c-student">Student name *</label><input type="text" id="c-student" /></div>
+      <div><label for="c-course">Course / program *</label><input type="text" id="c-course" /></div>
+      <div><label for="c-inst">Institution name *</label><input type="text" id="c-inst" /></div>
+      <div><label for="c-date">Date issued</label><input type="date" id="c-date" /></div>
+      <div><label for="c-pct">Percentage</label><input type="number" id="c-pct" step="0.01" min="0" max="100" /></div>
+      <div><label for="c-grade">Grade</label><input type="text" id="c-grade" placeholder="e.g. A, B+, Pass" /></div>
+      <div class="span2">
+        <button type="submit" class="primary">Generate certificate &amp; QR code</button>
+        <div class="error" id="c-error" role="alert"></div>
+      </div>
+    </form>
+
+    <div class="out hidden" id="c-out">
+      <p class="step">Step 1. Save this file in your project</p>
+      <div>Save it as <code class="path" id="c-path"></code></div>
+      <pre id="c-json"></pre>
+      <div class="row">
+        <button type="button" class="secondary" id="c-copy">Copy JSON</button>
+        <button type="button" class="primary" id="c-download">Download file</button>
+        <span class="ok" id="c-copied"></span>
+      </div>
+
+      <p class="step" style="margin-top:22px">Step 2. Put this QR code on the certificate</p>
+      <div class="qr-box">
+        <canvas id="c-qr" width="300" height="300"></canvas>
+        <div>
+          <button type="button" class="primary" id="c-qr-download">Download QR code (PNG)</button>
+          <div class="note">Opens: <span id="c-url"></span></div>
+          <div class="note">Also print this under the QR code, as a backup for people who can't scan:<br /><strong id="c-id"></strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Honour roll ===================== -->
+  <section class="panel">
+    <h2>2. Honour roll winner</h2>
+    <p class="sub">
+      Builds one winner's entry. Paste it inside the <code class="path">"awards": [ ... ]</code> list in
+      <code class="path">data/honour.json</code> (put a comma between entries).
+    </p>
+
+    <form id="award-form" class="grid" novalidate>
+      <div>
+        <label for="a-rank">Rank *</label>
+        <select id="a-rank">
+          <option value="champion">Champion</option>
+          <option value="first_runner_up">First Runner-Up</option>
+          <option value="second_runner_up">Second Runner-Up</option>
+          <option value="consolation">Consolation Prize</option>
+        </select>
+      </div>
+      <div><label for="a-name">Student name *</label><input type="text" id="a-name" /></div>
+      <div class="span2">
+        <label for="a-cert">Certificate ID (optional)</label>
+        <input type="text" id="a-cert" placeholder="the long ID from the certificate's file name" />
+        <div class="note">If filled in, this student gets a "Congratulations!" banner when they verify their own certificate.</div>
+      </div>
+      <div><label for="a-exam">Exam % *</label><input type="number" id="a-exam" step="0.01" min="0" max="100" /></div>
+      <div><label for="a-att">Attendance % *</label><input type="number" id="a-att" step="0.01" min="0" max="100" /></div>
+      <div><label for="a-act">Class activity % *</label><input type="number" id="a-act" step="0.01" min="0" max="100" /></div>
+      <div><label for="a-proj">Project % *</label><input type="number" id="a-proj" step="0.01" min="0" max="100" /></div>
+      <div><label for="a-cond">General conduct % *</label><input type="number" id="a-cond" step="0.01" min="0" max="100" /></div>
+      <div><label for="a-claim">Claim date</label><input type="date" id="a-claim" /></div>
+      <div class="span2">
+        <label for="a-prize">Prize *</label>
+        <input type="text" id="a-prize" placeholder="e.g. a laptop and a cash prize of N50,000" />
+      </div>
+      <div class="span2">
+        <label for="a-venue">Claim venue (optional)</label>
+        <input type="text" id="a-venue" placeholder="e.g. the Administrative Office" />
+      </div>
+      <div class="span2">
+        <label for="a-note">Extra note (optional)</label>
+        <input type="text" id="a-note" placeholder="e.g. Please bring your student ID card." />
+      </div>
+      <div class="span2"><label class="check"><input type="checkbox" id="a-claimed" /> Prize already claimed</label></div>
+      <div class="span2">
+        <button type="submit" class="primary">Build winner entry</button>
+        <div class="error" id="a-error" role="alert"></div>
+      </div>
+    </form>
+
+    <div class="out hidden" id="a-out">
+      <pre id="a-json"></pre>
+      <div class="row">
+        <button type="button" class="secondary" id="a-copy">Copy entry</button>
+        <span class="ok" id="a-copied"></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="vendor/qrcode.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---------- small helpers ----------
+  function store(key, value) {
+    try { if (value !== undefined) localStorage.setItem(key, value); return localStorage.getItem(key); }
+    catch (e) { return null; }
+  }
+
+  function randomHex(bytes) {
+    var b = new Uint8Array(bytes);
+    crypto.getRandomValues(b);
+    return Array.prototype.map.call(b, function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+  }
+
+  // A random version-4 UUID: 122 random bits, so it cannot be guessed.
+  function uuid() {
+    var b = new Uint8Array(16);
+    crypto.getRandomValues(b);
+    b[6] = (b[6] & 0x0f) | 0x40;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    var h = Array.prototype.map.call(b, function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+    return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
+  }
+
+  function copyText(text, flagEl) {
+    function done(msg) { flagEl.textContent = msg; setTimeout(function () { flagEl.textContent = ""; }, 2500); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done("Copied ✓"); }, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var t = document.createElement("textarea");
+      t.value = text; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); done("Copied ✓"); } catch (e) { done("Select the text and copy it manually"); }
+      document.body.removeChild(t);
+    }
+  }
+
+  function downloadBlob(blob, filename) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  function drawQr(canvas, text) {
+    var qr = qrcode(0, "M");            // type 0 = pick the smallest size that fits
+    qr.addData(text);
+    qr.make();
+    var n = qr.getModuleCount(), margin = 4;
+    var scale = Math.max(4, Math.floor(600 / (n + margin * 2)));
+    var size = (n + margin * 2) * scale;
+    canvas.width = canvas.height = size;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = "#000";
+    for (var r = 0; r < n; r++)
+      for (var c = 0; c < n; c++)
+        if (qr.isDark(r, c)) ctx.fillRect((c + margin) * scale, (r + margin) * scale, scale, scale);
+  }
+
+  // ---------- remember the boring fields ----------
+  $("c-base").value = store("rv_base") || "";
+  $("c-inst").value = store("rv_inst") || "";
+  $("c-date").value = new Date().toISOString().slice(0, 10);
+
+  // ---------- certificate ----------
+  var current = null;
+
+  $("cert-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("c-error"); err.textContent = "";
+
+    var base = $("c-base").value.trim().replace(/\/+$/, "");
+    var student = $("c-student").value.trim();
+    var course = $("c-course").value.trim();
+    var inst = $("c-inst").value.trim();
+    var pctRaw = $("c-pct").value.trim();
+    var grade = $("c-grade").value.trim();
+    var date = $("c-date").value;
+
+    if (!/^https:\/\/[^\s/]+/i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(base)) {
+      err.textContent = "Enter your website address starting with https:// (for example https://your-site.vercel.app)."; return;
+    }
+    if (!student || !course || !inst) { err.textContent = "Student name, course and institution are required."; return; }
+    if (pctRaw !== "" && (isNaN(Number(pctRaw)) || Number(pctRaw) < 0 || Number(pctRaw) > 100)) {
+      err.textContent = "Percentage must be a number from 0 to 100."; return;
+    }
+
+    var id = uuid();
+    var record = { certificate_code: "CERT-" + randomHex(4).toUpperCase(), student_name: student, course_name: course };
+    if (pctRaw !== "") record.percentage = Number(pctRaw);
+    if (grade) record.grade = grade;
+    if (date) record.date_issued = date;
+    record.institution_name = inst;
+    record.status = "active";
+
+    var json = JSON.stringify(record, null, 2) + "\n";
+    var url = base + "/verify/" + id;
+    current = { id: id, code: record.certificate_code, json: json, url: url };
+
+    store("rv_base", base); store("rv_inst", inst);
+
+    $("c-path").textContent = "data/certificates/" + id + ".json";
+    $("c-json").textContent = json;
+    $("c-url").textContent = url;
+    $("c-id").textContent = id;
+    drawQr($("c-qr"), url);
+    $("c-out").classList.remove("hidden");
+    $("c-out").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  $("c-copy").addEventListener("click", function () { if (current) copyText(current.json, $("c-copied")); });
+  $("c-download").addEventListener("click", function () {
+    if (current) downloadBlob(new Blob([current.json], { type: "application/json" }), current.id + ".json");
+  });
+  $("c-qr-download").addEventListener("click", function () {
+    if (!current) return;
+    $("c-qr").toBlob(function (blob) { downloadBlob(blob, current.code + "-qr.png"); }, "image/png");
+  });
+
+  // ---------- honour roll entry ----------
+  var awardJson = "";
+
+  $("award-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("a-error"); err.textContent = "";
+
+    var name = $("a-name").value.trim();
+    var prize = $("a-prize").value.trim();
+    if (!name || !prize) { err.textContent = "Student name and prize are required."; return; }
+
+    var fields = [["exam", "a-exam", "Exam"], ["attendance", "a-att", "Attendance"],
+                  ["class_activity", "a-act", "Class activity"], ["project", "a-proj", "Project"],
+                  ["conduct", "a-cond", "General conduct"]];
+    var perf = {};
+    for (var i = 0; i < fields.length; i++) {
+      var raw = $(fields[i][1]).value.trim();
+      var n = Number(raw);
+      if (raw === "" || isNaN(n) || n < 0 || n > 100) { err.textContent = fields[i][2] + " must be a number from 0 to 100."; return; }
+      perf[fields[i][0]] = n;
+    }
+
+    var entry = { rank: $("a-rank").value, student_name: name };
+    var cert = $("a-cert").value.trim();
+    if (cert) entry.certificate_id = cert;
+    entry.performance = perf;
+    entry.prize = prize;
+    if ($("a-claim").value) entry.claim_date = $("a-claim").value;
+    if ($("a-venue").value.trim()) entry.claim_venue = $("a-venue").value.trim();
+    if ($("a-note").value.trim()) entry.note = $("a-note").value.trim();
+    entry.claimed = $("a-claimed").checked;
+
+    awardJson = JSON.stringify(entry, null, 2);
+    $("a-json").textContent = awardJson;
+    $("a-out").classList.remove("hidden");
+  });
+
+  $("a-copy").addEventListener("click", function () { if (awardJson) copyText(awardJson, $("a-copied")); });
+})();
+</script>
+</body>
+</html>
