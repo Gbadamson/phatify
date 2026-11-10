@@ -86,6 +86,10 @@
       .replace(/"/g, "&quot;");
   }
 
+  function normalizeText(str) {
+    return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+  }
+
   function isNum(v) {
     return v !== null && v !== "" && v !== undefined && Number.isFinite(Number(v));
   }
@@ -160,15 +164,25 @@
 
     if (awards.length === 0) return;
 
+    const byName = normalizeText(opts && opts.studentName ? opts.studentName : "");
     const mine = certificateId
       ? awards.findIndex((a) => String(a.certificate_id || "").toLowerCase() === certificateId)
       : -1;
 
+    const nameMatch = mine < 0 && byName
+      ? awards.findIndex((a) => {
+          const match = normalizeText(a.student_name);
+          return match === byName || match.includes(byName) || byName.includes(match);
+        })
+      : -1;
+
+    const actualIndex = mine >= 0 ? mine : nameMatch;
+
     const banner =
-      mine >= 0
+      actualIndex >= 0
         ? `<div class="honour-banner">
              <div class="honour-banner-text">🎉 <strong>Congratulations!</strong> You are on this season's Honour Roll.</div>
-             <button type="button" class="honour-banner-btn" data-index="${mine}">View my performance</button>
+             <button type="button" class="honour-banner-btn" data-index="${actualIndex}">View my performance</button>
            </div>`
         : "";
 

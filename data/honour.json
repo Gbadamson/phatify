@@ -1,62 +1,62 @@
 {
-  "season": "2026 First Term",
+  "season": "PhatHand Summer Coaching 2026",
   "awards": [
     {
       "rank": "champion",
-      "student_name": "Jane Doe",
+      "student_name": "Udeozor Samuel Otitochukwu",
       "certificate_id": "b6e3f93b-c568-4c89-a225-6093bd2efc6f",
       "performance": {
-        "exam": 96,
-        "attendance": 98.5,
-        "class_activity": 90,
-        "project": 94,
+        "exam": 80,
+        "attendance": 95,
+        "class_activity": 100,
+        "project": 95,
         "conduct": 100
       },
-      "prize": "a laptop and a cash prize of N50,000",
-      "claim_date": "2027-01-15",
+      "prize": "A Bluetooth Animated Headset",
+      "claim_date": "2026-12-01",
       "claim_venue": "the Administrative Office",
       "note": "Please bring your student ID card when claiming.",
       "claimed": false
     },
     {
       "rank": "first_runner_up",
-      "student_name": "Chinedu Okafor",
+      "student_name": "Ebhodaghe Jemima Peace",
       "performance": {
-        "exam": 91,
+        "exam": 60,
         "attendance": 95,
-        "class_activity": 88,
+        "class_activity": 100,
         "project": 90,
-        "conduct": 92
+        "conduct": 100
       },
-      "prize": "a tablet and a certificate of excellence",
-      "claim_date": "2027-01-15",
+      "prize": "Digital Smart Cup",
+      "claim_date": "2026-12-01",
       "claimed": false
     },
     {
       "rank": "second_runner_up",
-      "student_name": "Amina Yusuf",
+      "student_name": "Idiaghe Splendour Ofure",
       "performance": {
-        "exam": 88,
-        "attendance": 92,
-        "class_activity": 85,
-        "project": 89,
-        "conduct": 95
+        "exam": 60,
+        "attendance": 90,
+        "class_activity": 95,
+        "project": 90,
+        "conduct": 90
       },
-      "prize": "a scientific calculator and a book bundle",
-      "claim_date": "2027-01-15",
+      "prize": "A mini rechargeable Hand-fan",
+      "claim_date": "2026-12-01",
       "claimed": false
     },
     {
       "rank": "consolation",
-      "student_name": "Emeka Eze",
+      "student_name": "Emezirionye Michael",
       "performance": {
-        "exam": 80,
-        "attendance": 90,
-        "class_activity": 82,
-        "project": 84,
-        "conduct": 88
+        "exam": 90,
+        "attendance": 80,
+        "class_activity": 100,
+        "project": 90,
+        "conduct": 85
       },
-      "prize": "a gift hamper",
+      "prize": "N2,000 Cash Prize",
       "claim_date": "2026-10-01",
       "claimed": false
     },
@@ -73,13 +73,6 @@
       "prize": "a gift hamper",
       "claim_date": "2026-10-01",
       "claimed": true
-    },
-    {
-      "rank": "consolation",
-      "student_name": "Draft Student (hidden)",
-      "performance": { "exam": 70, "attendance": 70, "class_activity": 70, "project": 70, "conduct": 70 },
-      "prize": "a gift hamper",
-      "published": false
     }
   ]
 }
